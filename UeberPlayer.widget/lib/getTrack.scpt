@@ -43,27 +43,29 @@ on error
 end try
 
 -- Get Spotify track data if playing
-if spotifyInstalled and application "Spotify" is running then
-  tell application "Spotify"
-    set appName to "Spotify"
+if spotifyInstalled then
+  if application "Spotify" is running then
+    tell application "Spotify"
+      set appName to "Spotify"
 
-    using terms from application "Music"
-      if player state is playing then
-        set playingState to true
-      end if
-    end using terms from
+      using terms from application "Music"
+        if player state is playing then
+          set playingState to true
+        end if
 
-    if playingState is true then
-      set trackName to the name of current track
-      set artistName to the artist of current track
-      set albumName to the album of current track
-      set artworkURL to the artwork url of current track
-      set trackDuration to the (duration of current track) / 1000
-      set timeElapsed to the player position
+        if playingState is true then
+          set trackName to the name of current track
+          set artistName to the artist of current track
+          set albumName to the album of current track
+          set artworkURL to the artwork url of current track
+          set trackDuration to the (duration of current track) / 1000
+          set timeElapsed to the player position
 
-      set artExtension to ".jpg"
-    end if
-  end tell
+          set artExtension to ".jpg"
+        end if  
+      end using terms from
+    end tell
+  end if
 end if
 
 -- Get default Apple music app data if playing
@@ -93,7 +95,31 @@ if playingState is false and application "Music" is running then
   end tell
 end if
 
-set artworkFilename to generateArtFilename(albumName & "-" & artistName & artExtension as string)
+-- Get any other music data if playing
+if playingState is false then
+  set nowplaying_cli_out to do shell script (mypath & "/nowplaying-cli get title album artist duration elapsedTime artworkMIMEType playbackRate" as string)
+  set nowplaying_cli_out to paragraphs of nowplaying_cli_out
+  if (count of nowplaying_cli_out) is 7 then
+    set playingState to item 7 of nowplaying_cli_out is "1"
+    if playingState is true then
+      set appName to "Other"
+
+      set trackName to item 1 of nowplaying_cli_out
+      set albumName to item 2 of nowplaying_cli_out
+      set artistName to item 3 of nowplaying_cli_out
+      set trackDuration to item 4 of nowplaying_cli_out
+      set timeElapsed to item 5 of nowplaying_cli_out
+      set artworkURL to ""
+      if item 6 of nowplaying_cli_out is "image/png" then
+        set artExtension to ".png"
+      else
+        set artExtension to ".jpg"
+      end if
+    end if
+  end if
+end if
+
+set artworkFilename to generateArtFilename(albumName as string, trackName as string, artistName & artExtension as string)
 
 -- Trigger extra changes if song changed
 if playingState and my songChanged() then
@@ -110,6 +136,8 @@ if playingState and my songChanged() then
         my extractSpotifyArt()
       else if appName is "Music" and not musicError then
         my extractMusicArt()
+      else if appName is "Other" then
+        my extractOtherArt()
       end if
     end try
   end if
@@ -154,8 +182,7 @@ on fileExists(f)
   end tell
 end fileExists
 
--- Generate a "safe" filename for cached artwork (no whitespace nor quotation marks)
-on generateArtFilename(str)
+on checkString(str)
   set charsToCheck to characters of str
   set retList to {}
   repeat with i from 1 to count charsToCheck
@@ -164,6 +191,19 @@ on generateArtFilename(str)
     end if
   end repeat
   return retList as string
+end checkString
+
+-- Generate a "safe" filename for cached artwork (no whitespace nor quotation marks)
+on generateArtFilename(albumName, trackName, rest)
+  set cleanAlbumName to my checkString(albumName)
+  set cleanTrackName to my checkString(trackName)
+  set cleanRest to my checkString(rest)
+  set charsToCheck to characters of albumName
+  if cleanAlbumName is not "" then
+    return cleanAlbumName & " - " & cleanRest as string
+  else
+    return cleanTrackName & " - " & cleanRest as string
+  end if
 end generateArtFilename
 
 -- Extract artwork file from Spotify
@@ -192,3 +232,8 @@ on extractMusicArt()
   write srcBytes to outFile starting at eof
   close access outFile
 end extractMusicArt
+
+-- Extract artwork from other music apps
+on extractOtherArt()
+    do shell script "mkdir -p \"./UeberPlayer.widget/cache/\" && /usr/local/bin/nowplaying-cli get artworkData | base64 -d > \"./UeberPlayer.widget/cache/" & artworkFilename & "\""
+end extractOtherArt

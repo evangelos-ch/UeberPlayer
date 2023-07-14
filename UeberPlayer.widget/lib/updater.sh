@@ -1,5 +1,5 @@
 # Download latest version and update widget
-curl -s https://raw.githubusercontent.com/aCluelessDanny/UeberPlayer/master/UeberPlayer.widget.zip > ../ueberplayer_update.zip &&
+curl -s https://raw.githubusercontent.com/evangelos-ch/UeberPlayer/master/UeberPlayer.widget.zip > ../ueberplayer_update.zip &&
 unzip -o ../ueberplayer_update.zip -d ../ueberplayer_update &&
 
 # Prepare settings for migration

@@ -1,5 +1,8 @@
-
+.vscode/
 dist/
 node_modules/
 Playbox.widget/
 UeberPlayer.widget/cache/
+UeberPlayer.widget/lib/nowplaying-cli
+UeberPlayer.widget/lib/currentTrack.plist
+nowplaying-cli/

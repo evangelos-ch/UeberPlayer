@@ -1,26 +1,25 @@
 {
-  "name": "ueberplayer",
-  "version": "1.4.0",
-  "description": "A music player widget for Ubersicht",
-  "main": "./UeberPlayer.widget/index.jsx",
-  "dependencies": {},
-  "devDependencies": {
-    "gulp": "^4.0.2",
-    "gulp-zip": "^5.0.1"
-  },
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/aCluelessDanny/UeberPlayer"
-  },
-  "keywords": [
-    "ubersicht",
-    "music-player",
-    "spotify",
-    "apple-music"
-  ],
-  "author": "aCluelessDanny",
-  "license": ""
+    "name": "ueberplayer",
+    "version": "1.4.0",
+    "description": "A music player widget for Ubersicht",
+    "main": "./UeberPlayer.widget/index.jsx",
+    "devDependencies": {
+        "gulp": "^4.0.2",
+        "gulp-zip": "^5.1.0"
+    },
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/aCluelessDanny/UeberPlayer"
+    },
+    "keywords": [
+        "ubersicht",
+        "music-player",
+        "spotify",
+        "apple-music"
+    ],
+    "author": "aCluelessDanny",
+    "license": ""
 }
